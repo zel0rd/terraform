@@ -1,0 +1,5 @@
+.env
+./node_modules
+./terraform_test
+node_modules/
+terraform_test/
