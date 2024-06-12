@@ -68,3 +68,35 @@ export const createOpenVpnSecurityGroup = async (vpcId) => {
     throw err;
   }
 };
+
+export const createPrivateSecurityGroup = async (vpcId) => {
+  try {
+    const sgParams = {
+      Description: "Security group for private EC2 instance",
+      GroupName: "PrivateEC2SecurityGroup",
+      VpcId: vpcId,
+    };
+    const sgData = await ec2Client.send(new CreateSecurityGroupCommand(sgParams));
+    const securityGroupId = sgData.GroupId;
+    console.log(`Created Security Group with ID: ${securityGroupId}`);
+
+    const ingressParams = {
+      GroupId: securityGroupId,
+      IpPermissions: [
+        {
+          IpProtocol: "tcp",
+          FromPort: 22,
+          ToPort: 22,
+          IpRanges: [{ CidrIp: "0.0.0.0/0" }],
+        }
+      ],
+    };
+    await ec2Client.send(new AuthorizeSecurityGroupIngressCommand(ingressParams));
+    console.log("Inbound rules set for Security Group");
+
+    return securityGroupId;
+  } catch (err) {
+    console.error("Error creating security group", err);
+    throw err;
+  }
+};
