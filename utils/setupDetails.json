@@ -1,0 +1,12 @@
+{
+  "vpcId": "vpc-08aafa9319f955d65",
+  "publicSubnetAId": "subnet-08acfc4a5a6055363",
+  "privateSubnetAppAId": "subnet-0b476e73ac62e7a54",
+  "privateSubnetDbAId": "subnet-0c44c7960823dd3be",
+  "igwId": "igw-0f99f705445668834",
+  "natGatewayId": "nat-079aee589f9480093",
+  "publicRouteTableId": "rtb-00ba815bf126f0b26",
+  "privateRouteTableId": "rtb-06c437a1ec72d3693",
+  "openVpnId": "i-068fdb3b7577c0af1",
+  "privateEC2Id": "i-072b48ea4ed1ea8cb"
+}

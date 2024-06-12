@@ -1,5 +1,6 @@
 import { EC2Client, CreateVpcCommand, CreateSubnetCommand, CreateInternetGatewayCommand, AttachInternetGatewayCommand, CreateRouteTableCommand, CreateRouteCommand, AssociateRouteTableCommand, AllocateAddressCommand, CreateNatGatewayCommand, DescribeNatGatewaysCommand, RunInstancesCommand, CreateTagsCommand } from "@aws-sdk/client-ec2";
 import dotenv from "dotenv";
+import { createOpenVpnSecurityGroup } from './securityGroupSetup.js';
 
 dotenv.config();
 
@@ -111,10 +112,13 @@ const createVpcSetup = async () => {
     await ec2Client.send(new AssociateRouteTableCommand({ RouteTableId: privateRouteTableId, SubnetId: privateSubnetDbAId }));
     console.log(`Associated Private Route Table ${privateRouteTableId} with Private Subnets`);
 
+    // Create OpenVPN Security Group
+    const openVpnSecurityGroupId = await createOpenVpnSecurityGroup(vpcId);
+
     // Create OpenVPN Instance in Public Subnet A
     const openVpnParams = {
-      ImageId: process.env.AMI_IMAGE_ID, // Read AMI ID from .env file
-      InstanceType: "t2.micro",
+      ImageId: process.env.AMI_IMAGE_OPENVPN, // Read AMI ID from .env file
+      InstanceType: "t2.small",
       KeyName: process.env.KEY_NAME,
       MinCount: 1,
       MaxCount: 1,
@@ -123,7 +127,7 @@ const createVpcSetup = async () => {
           AssociatePublicIpAddress: true,
           SubnetId: publicSubnetAId,
           DeviceIndex: 0,
-          Groups: [] // Add Security Group IDs here
+          Groups: [openVpnSecurityGroupId]
         }
       ],
       TagSpecifications: [

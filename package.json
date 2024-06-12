@@ -1,6 +1,9 @@
 {
+  "type": "module",
   "dependencies": {
+    "@aws-sdk/client-ec2": "^3.592.0",
     "aws-sdk": "^2.1629.0",
+    "dotenv": "^16.4.5",
     "uuid": "^9.0.1"
   }
 }
