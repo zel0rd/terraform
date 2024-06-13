@@ -1,12 +1,12 @@
 {
-  "vpcId": "vpc-0bf22fdb100507169",
-  "publicSubnetAId": "subnet-0d409382398634f78",
-  "privateSubnetAppAId": "subnet-0dcc114d8e1e85615",
-  "privateSubnetDbAId": "subnet-0996d0c26dfe28549",
-  "igwId": "igw-00197e3f77c5b2a88",
-  "natGatewayId": "nat-0537ff48abcd9b48d",
-  "publicRouteTableId": "rtb-0825fdf58d78f1f64",
-  "privateRouteTableId": "rtb-0c7eb79c4b990002e",
-  "openVpnId": "i-07207271941e323cc",
-  "privateEC2Id": "i-05c61af1f3d32fa1f"
+  "vpcId": "vpc-0467d654525515661",
+  "publicSubnetAId": "subnet-0159ec69a651cf0e4",
+  "privateSubnetAppAId": "subnet-0f1075658fe1b0e12",
+  "privateSubnetDbAId": "subnet-0f75852359ab06370",
+  "igwId": "igw-0773580b28d4cfd41",
+  "natGatewayId": "nat-087c5f541714721b4",
+  "publicRouteTableId": "rtb-0adf4d43bdd94361f",
+  "privateRouteTableId": "rtb-0a9aeb3a79e49d9be",
+  "openVpnId": "i-020792b4590d60f65",
+  "privateEC2Id": "i-0ebd680a4fc4c772e"
 }

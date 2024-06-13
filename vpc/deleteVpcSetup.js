@@ -1,4 +1,4 @@
-import { EC2Client, TerminateInstancesCommand, DeleteNatGatewayCommand, DeleteSubnetCommand, DetachInternetGatewayCommand, DeleteInternetGatewayCommand, DeleteRouteTableCommand, DeleteVpcCommand, DescribeNatGatewaysCommand, DescribeRouteTablesCommand, DisassociateRouteTableCommand, DescribeInternetGatewaysCommand } from "@aws-sdk/client-ec2";
+import { EC2Client, TerminateInstancesCommand, DeleteNatGatewayCommand, DeleteSubnetCommand, DetachInternetGatewayCommand, DeleteInternetGatewayCommand, DeleteRouteTableCommand, DeleteVpcCommand, DescribeNatGatewaysCommand, DescribeRouteTablesCommand, DisassociateRouteTableCommand, DescribeInternetGatewaysCommand, DeleteSecurityGroupCommand, DescribeSecurityGroupsCommand } from "@aws-sdk/client-ec2";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -71,7 +71,11 @@ const deleteInternetGateway = async (vpcId, igwId) => {
   try {
     // Check if the Internet Gateway exists
     const describeParams = { InternetGatewayIds: [igwId] };
-    await ec2Client.send(new DescribeInternetGatewaysCommand(describeParams));
+    const igwData = await ec2Client.send(new DescribeInternetGatewaysCommand(describeParams));
+    if (igwData.InternetGateways.length === 0) {
+      console.log(`Internet Gateway ${igwId} not found, skipping deletion.`);
+      return;
+    }
     console.log(`Internet Gateway ${igwId} exists. Proceeding with deletion.`);
 
     // Detach Internet Gateway from VPC
@@ -97,6 +101,10 @@ const disassociateRouteTables = async (routeTableId) => {
       RouteTableIds: [routeTableId]
     };
     const describeRouteTablesData = await ec2Client.send(new DescribeRouteTablesCommand(describeRouteTablesParams));
+    if (describeRouteTablesData.RouteTables.length === 0) {
+      console.log(`Route Table ${routeTableId} not found, skipping disassociation.`);
+      return;
+    }
     const associations = describeRouteTablesData.RouteTables[0].Associations;
     for (const association of associations) {
       if (!association.Main) {
@@ -122,7 +130,34 @@ const deleteRouteTable = async (routeTableId) => {
     await ec2Client.send(new DeleteRouteTableCommand({ RouteTableId: routeTableId }));
     console.log(`Deleted Route Table with ID: ${routeTableId}`);
   } catch (err) {
-    console.error("Error deleting route table", err);
+    if (err.Code === 'InvalidRouteTableID.NotFound') {
+      console.log(`Route Table ${routeTableId} not found, skipping deletion.`);
+    } else {
+      console.error("Error deleting route table", err);
+      throw err;
+    }
+  }
+};
+
+const deleteSecurityGroups = async (vpcId) => {
+  try {
+    const describeParams = {
+      Filters: [
+        {
+          Name: "vpc-id",
+          Values: [vpcId]
+        }
+      ]
+    };
+    const data = await ec2Client.send(new DescribeSecurityGroupsCommand(describeParams));
+    for (const sg of data.SecurityGroups) {
+      if (sg.GroupName !== "default") {
+        await ec2Client.send(new DeleteSecurityGroupCommand({ GroupId: sg.GroupId }));
+        console.log(`Deleted Security Group with ID: ${sg.GroupId}`);
+      }
+    }
+  } catch (err) {
+    console.error("Error deleting security groups", err);
     throw err;
   }
 };
@@ -132,6 +167,7 @@ const deleteVpc = async (vpcId) => {
     throw new Error("VPC ID is undefined");
   }
   try {
+    await deleteSecurityGroups(vpcId);
     await ec2Client.send(new DeleteVpcCommand({ VpcId: vpcId }));
     console.log(`Deleted VPC with ID: ${vpcId}`);
   } catch (err) {
