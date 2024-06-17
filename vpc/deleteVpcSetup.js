@@ -178,22 +178,24 @@ const deleteVpc = async (vpcId) => {
 
 const deleteVpcSetup = async (setupDetails) => {
   try {
-    const { openVpnId, privateEC2Id, natGatewayId, vpcId, publicSubnetAId, privateSubnetAppAId, privateSubnetDbAId, igwId, publicRouteTableId, privateRouteTableId } = setupDetails;
+    const { vpcId, subnets, igwId, natGatewayId, routeTables, ec2Instances } = setupDetails;
 
     // Terminate EC2 instances
-    await deleteEC2Instance(openVpnId);
-    await deleteEC2Instance(privateEC2Id);
+    for (const instanceId of Object.values(ec2Instances)) {
+      await deleteEC2Instance(instanceId);
+    }
 
     // Delete NAT Gateway
     await deleteNatGateway(natGatewayId);
 
     // Delete resources for VPC
     await deleteInternetGateway(vpcId, igwId);
-    await deleteRouteTable(publicRouteTableId);
-    await deleteRouteTable(privateRouteTableId);
-    await deleteSubnet(publicSubnetAId);
-    await deleteSubnet(privateSubnetAppAId);
-    await deleteSubnet(privateSubnetDbAId);
+    for (const routeTableId of Object.values(routeTables)) {
+      await deleteRouteTable(routeTableId);
+    }
+    for (const subnetId of subnets) {
+      await deleteSubnet(subnetId);
+    }
     await deleteVpc(vpcId);
 
     console.log('Deleted all resources successfully');

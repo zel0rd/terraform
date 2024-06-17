@@ -21,3 +21,14 @@ export const loadSetupDetails = () => {
     throw new Error('Setup details file not found');
   }
 };
+
+export const commentOutSetupDetails = () => {
+  if (fs.existsSync(FILE_PATH)) {
+    const data = fs.readFileSync(FILE_PATH, 'utf8');
+    const commentedData = data.split('\n').map(line => `// ${line}`).join('\n');
+    fs.writeFileSync(FILE_PATH, commentedData);
+    console.log(`Setup details in ${FILE_PATH} have been commented out`);
+  } else {
+    throw new Error('Setup details file not found');
+  }
+};
