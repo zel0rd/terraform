@@ -1,4 +1,4 @@
-import { EC2Client, TerminateInstancesCommand, DeleteNatGatewayCommand, DeleteSubnetCommand, DetachInternetGatewayCommand, DeleteInternetGatewayCommand, DeleteRouteTableCommand, DeleteVpcCommand, DescribeNatGatewaysCommand, DescribeRouteTablesCommand, DisassociateRouteTableCommand, DescribeInternetGatewaysCommand, DeleteSecurityGroupCommand, DescribeSecurityGroupsCommand } from "@aws-sdk/client-ec2";
+import { EC2Client, TerminateInstancesCommand, DeleteNatGatewayCommand, DeleteSubnetCommand, DetachInternetGatewayCommand, DeleteInternetGatewayCommand, DeleteRouteTableCommand, DeleteVpcCommand, DescribeNatGatewaysCommand, DescribeRouteTablesCommand, DisassociateRouteTableCommand, DescribeInternetGatewaysCommand, DeleteSecurityGroupCommand, DescribeSecurityGroupsCommand, ReleaseAddressCommand } from "@aws-sdk/client-ec2";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -27,7 +27,7 @@ const deleteEC2Instance = async (instanceId) => {
   }
 };
 
-const deleteNatGateway = async (natGatewayId) => {
+const deleteNatGateway = async (natGatewayId, allocationId) => {
   if (!natGatewayId) {
     throw new Error("NAT Gateway ID is undefined");
   }
@@ -45,6 +45,12 @@ const deleteNatGateway = async (natGatewayId) => {
       natGatewayState = describeNatGatewayData.NatGateways[0].State;
     }
     console.log(`NAT Gateway ${natGatewayId} is deleted`);
+
+    // Release the Elastic IP address
+    if (allocationId) {
+      await ec2Client.send(new ReleaseAddressCommand({ AllocationId: allocationId }));
+      console.log(`Released Elastic IP with Allocation ID: ${allocationId}`);
+    }
   } catch (err) {
     console.error("Error deleting NAT Gateway", err);
     throw err;
@@ -178,15 +184,15 @@ const deleteVpc = async (vpcId) => {
 
 const deleteVpcSetup = async (setupDetails) => {
   try {
-    const { vpcId, subnets, igwId, natGatewayId, routeTables, ec2Instances } = setupDetails;
+    const { vpcId, subnets, igwId, natGatewayId, allocationId, routeTables, ec2Instances } = setupDetails;
 
     // Terminate EC2 instances
     for (const instanceId of Object.values(ec2Instances)) {
       await deleteEC2Instance(instanceId);
     }
 
-    // Delete NAT Gateway
-    await deleteNatGateway(natGatewayId);
+    // Delete NAT Gateway and release Elastic IP
+    await deleteNatGateway(natGatewayId, allocationId);
 
     // Delete resources for VPC
     await deleteInternetGateway(vpcId, igwId);

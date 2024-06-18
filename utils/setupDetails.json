@@ -1,18 +1,19 @@
 // {
-//   "vpcId": "vpc-04498dc7ac4f110ca",
+//   "vpcId": "vpc-0a76238e47405d920",
 //   "subnets": [
-//     "subnet-04593f25b2227653f",
-//     "subnet-05d9c997e0f1f05fe"
+//     "subnet-0b2113172059004e4",
+//     "subnet-0053b2c840c9db7fd"
 //   ],
-//   "igwId": "igw-0b2ad3541199b2709",
-//   "natGatewayId": "nat-06d0f02a1ff2fff2f",
+//   "igwId": "igw-0c223dc0006b208e9",
+//   "natGatewayId": "nat-0b7e65dd756cfafac",
+//   "allocationId": "eipalloc-044c79960366021f1",
 //   "routeTables": [
-//     "rtb-0af37cb40473a172e",
-//     "rtb-019868bd545729a89"
+//     "rtb-0579ccde7028f880a",
+//     "rtb-08c1f9b5b97bcdf47"
 //   ],
 //   "ec2Instances": {
-//     "0": "i-0b8f9b69d40b17b51",
-//     "1": "i-0967e9a264029fa8e",
-//     "openVpnId": "i-0a5ace775567d7fc5"
+//     "0": "i-07e3b0663b98ffbc4",
+//     "1": "i-08b4ed29586e506f4",
+//     "openVpnId": "i-034e42fa57e72b2a8"
 //   }
 // }

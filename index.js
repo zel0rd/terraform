@@ -26,7 +26,7 @@ const run = async (envConfig) => {
     const subnetIds = await Promise.all(subnets.map(subnet => createSubnet(vpcId, subnet.cidr, `${REGION}${subnet.availabilityZone}`)));
 
     const igwId = await createInternetGateway(vpcId);
-    const natGatewayId = await createNatGateway(subnetIds[0]);
+    const { natGatewayId, allocationId } = await createNatGateway(subnetIds[0]);
 
     const routeTableIds = await Promise.all(subnetIds.map((subnetId, index) => {
       const targetId = index === 0 ? igwId : natGatewayId;
@@ -47,6 +47,7 @@ const run = async (envConfig) => {
       subnets: subnetIds,
       igwId,
       natGatewayId,
+      allocationId,
       routeTables: routeTableIds,
       ec2Instances: { openVpnId, ...ec2InstanceIds }
     };
