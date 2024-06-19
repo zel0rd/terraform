@@ -25,11 +25,5 @@
       "type": "t2.micro",
       "ami": "ami-05399e027db5dded5"
     }
-  ],
-  "openVpn": {
-    "subnetIndex": 0,
-    "name": "OpenVPN",
-    "type": "t2.small",
-    "ami": "ami-09a093fa2e3bfca5a"
-  }
+  ]
 }

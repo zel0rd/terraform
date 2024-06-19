@@ -34,8 +34,8 @@ const run = async (envConfig) => {
       return createRouteTable(vpcId, targetId, subnetId, isNatGateway);
     }));
 
-    const openVpnSecurityGroupId = await createOpenVpnSecurityGroup(vpcId);
-    const openVpnId = await createEc2Instance(subnetIds[openVpn.subnetIndex], openVpnSecurityGroupId, openVpn.name, openVpn.ami, openVpn.type);
+    // const openVpnSecurityGroupId = await createOpenVpnSecurityGroup(vpcId);
+    // const openVpnId = await createEc2Instance(subnetIds[openVpn.subnetIndex], openVpnSecurityGroupId, openVpn.name, openVpn.ami, openVpn.type);
 
     const privateSecurityGroupId = await createPrivateSecurityGroup(vpcId);
     const ec2InstanceIds = await Promise.all(instances.map(instance => {
@@ -49,7 +49,7 @@ const run = async (envConfig) => {
       natGatewayId,
       allocationId,
       routeTables: routeTableIds,
-      ec2Instances: { openVpnId, ...ec2InstanceIds }
+      ec2Instances: { ...ec2InstanceIds }
     };
 
     saveSetupDetails(setupDetails);
